@@ -8,8 +8,12 @@ from datetime import datetime, timedelta  # ✅ Added for cache timing
 
 app = FastAPI()
 
-# ✅ Allow frontend connection
-origins = ["http://localhost:5173", "http://127.0.0.1:5173"]
+origins = [
+    "https://mgnrega-frontend-nw6c.vercel.app",  # ✅ your live frontend
+    "http://localhost:5173",                     # ✅ local dev
+    "http://127.0.0.1:5173"
+]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
