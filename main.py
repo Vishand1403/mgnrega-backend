@@ -4,13 +4,13 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 from fastapi.middleware.cors import CORSMiddleware
 import requests
-from datetime import datetime, timedelta  # ✅ Added for cache timing
+from datetime import datetime, timedelta  
 
 app = FastAPI()
 
 origins = [
-    "https://mgnrega-frontend-nw6c.vercel.app",  # ✅ your live frontend
-    "http://localhost:5173",                     # ✅ local dev
+    "https://mgnrega-frontend-nw6c.vercel.app",  
+    "http://localhost:5173",                     
     "http://127.0.0.1:5173"
 ]
 
@@ -22,13 +22,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ✅ Database setup
+
 DATABASE_URL = "sqlite:///./mgnrega.db"
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 Base = declarative_base()
 
-# ✅ Database model
+
 class DistrictData(Base):
     __tablename__ = "district_data"
     id = Column(Integer, primary_key=True, index=True)
@@ -66,7 +66,7 @@ class DistrictData(Base):
 
 Base.metadata.create_all(bind=engine)
 
-# ✅ Dependency
+
 def get_db():
     db = SessionLocal()
     try:
@@ -79,7 +79,7 @@ def home():
     return {"message": "MGNREGA Tamil Nadu backend active ✅"}
 
 
-# 🧠 CACHE SETUP
+
 cache_data = {
     "timestamp": None,
     "data": None
@@ -93,10 +93,10 @@ def is_cache_valid():
     return datetime.now() - cache_data["timestamp"] < CACHE_DURATION
 
 
-# ✅ Fetch and store data (with caching)
+
 @app.post("/fetch_tn_data")
 def fetch_tn_data(db: Session = Depends(get_db)):
-    # 🔹 Return cached result if still valid
+    
     if is_cache_valid():
         print("✅ Using cached MGNREGA data.")
         return {"message": "Using cached data (from memory)", "cached": True}
@@ -168,14 +168,14 @@ def fetch_tn_data(db: Session = Depends(get_db)):
         db.commit()
         print(f"✅ {year} → {total} total inserted so far")
 
-    # 🧠 Save to cache
+   
     cache_data["timestamp"] = datetime.now()
     cache_data["data"] = all_records
 
     return {"message": f"✅ {total} Tamil Nadu records stored successfully", "cached": False}
 
 
-# ✅ Get filtered data (Frontend Compatible)
+
 @app.get("/get_data")
 def get_data(state_name: str, fin_year: str = "All", db: Session = Depends(get_db)):
     query = db.query(DistrictData)
