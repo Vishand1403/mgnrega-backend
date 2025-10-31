@@ -1,16 +1,18 @@
 from fastapi import FastAPI, Depends
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import create_engine, Column, Integer, String, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
-from fastapi.middleware.cors import CORSMiddleware
 import requests
 from datetime import datetime, timedelta  
 
 app = FastAPI()
 
+# ✅ Allow your frontend and localhost
 origins = [
-    "https://mgnrega-frontend-nw6c.vercel.app",  
-    "http://localhost:5173",                     
+    "https://mgnrega-frontend-nw6c.vercel.app",
+    "http://localhost:5173",
     "http://127.0.0.1:5173"
 ]
 
@@ -21,6 +23,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+@app.get("/")
+def read_root():
+    return {"message": "CORS test OK ✅"}
+
+
 
 
 DATABASE_URL = "sqlite:///./mgnrega.db"
